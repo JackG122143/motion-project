@@ -1,45 +1,56 @@
-/**
- * 8 Concepts Learned (Pick the 8 you used, delete the others):
- * 
- * -Sprites
- * 
- * -Sprite Position (coordinates: x and y)
- * 
- * -Controller (dx) and move mySprite with buttons
- * 
- * -overlap Events / sprite kind
- * 
- * -"Spawning" sprites: create and on created
- * 
- * -random
- * 
- * -Displaying numbers (1, 2, 3) as a string ("123")
- * 
- * -score and life
- * 
- * -countdown
- * 
- * -stay in screen and ghost
- * 
- * -set image
- * 
- * -sprite say
- * 
- * -splash
- * 
- * Key Features (List the Key Features You Will Need For Your Game, replace examples)
- * 
- * - ex. Playable Sprite
- * 
- * - ex. player can move up/down left/right
- * 
- * - ex. player can collide with enemy
- * 
- * - ex. enemy decreases player life
- */
+// 8 Concepts Learned (Pick the 8 you used, delete the others):
+// 
+// -Sprites
+// 
+// -Sprite Position (coordinates: x and y)
+// 
+// -Controller (dx) and move mySprite with buttons
+// 
+// -overlap Events / sprite kind
+// 
+// -"Spawning" sprites: create and on created
+// 
+// -random
+// 
+// -Displaying numbers (1, 2, 3) as a string ("123")
+// 
+// -score and life
+// 
+// -countdown
+// 
+// -stay in screen and ghost
+// 
+// -set image
+// 
+// -sprite say
+// 
+// -splash
+// 
+// Key Features (List the Key Features You Will Need For Your Game, replace examples)
+// 
+// - ex. Playable Sprite
+// 
+// - ex. player can move up/down left/right
+// 
+// - ex. player can collide with enemy
+// 
+// - ex. enemy decreases player life
 sprites.onCreated(SpriteKind.Enemy, function (sprite) {
-    sprite.setPosition(175, randint(70, 120))
+    sprite.setPosition(175, randint(90, 120))
 })
+controller.anyButton.onEvent(ControllerButtonEvent.Pressed, function () {
+    mySprite.vy += -50
+})
+sprites.onDestroyed(SpriteKind.Player, function (sprite) {
+    pause(500)
+    game.over(false, effects.melt)
+    game.splash("Game Over", "")
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprite.startEffect(effects.disintegrate, 200)
+    sprite.destroy()
+})
+let mySprite: Sprite = null
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -162,7 +173,7 @@ scene.setBackgroundImage(img`
     7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
     7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
     `)
-let mySprite = sprites.create(img`
+mySprite = sprites.create(img`
     ................................
     ................................
     ................................
@@ -298,7 +309,14 @@ let pipe = sprites.create(img`
     7777777777
     7777777777
     `, SpriteKind.Enemy)
+mySprite.setStayInScreen(true)
 game.onUpdate(function () {
     pipe.x += -1
-    pipe.x = 175
+    if (pipe.x < 0) {
+        pipe.setPosition(175, randint(90, 120))
+        info.changeScoreBy(1)
+    }
+})
+game.onUpdate(function () {
+    mySprite.vy += 1
 })
